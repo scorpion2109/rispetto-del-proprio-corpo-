@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rispetto del Corpo</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+/* ================= VARIABILI ================= */
+:root{
+    --text:#e6f7ff;
+    --bar:#3a3a3a;
+}
+body.light{
+    --text:#00252b;
+    --bar:#f5f5f5;
+}
+
+/* ================= BASE ================= */
+html,body{
+    margin:0;
+    height:100%;
+    font-family:Poppins,sans-serif;
+    color:var(--text);
+    display:flex;
+    flex-direction:column;
+    background:#000;
+}
+
+/* ================= VIDEO BACKGROUND ================= */
+.video-bg{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    overflow:hidden;
+}
+.video-bg video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    filter:brightness(.55) contrast(1.1);
+}
+.video-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    z-index:-1;
+}
+
+/* ================= TOPBAR ================= */
+.topbar{
+    position:fixed;
+    top:0;
+    width:100%;
+    height:70px;
+    background:var(--bar);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 25px;
+    z-index:1000;
+    backdrop-filter:blur(6px);
+}
+
+.logo{height:40px;cursor:pointer}
+
+.nav-center{display:flex;gap:30px}
+.nav-center a{
+    color:var(--text);
+    text-decoration:none;
+    font-weight:600
+}
+.nav-center a:hover{color:#00eaff}
+
+.nav-right{padding-right:60px}
+
+/* ================= AVATAR ================= */
+.avatar{
+    width:40px;height:40px;border-radius:50%;
+    border:2px solid #00eaff;
+    cursor:pointer;object-fit:cover
+}
+
+/* ================= MENU ================= */
+.profile-menu{
+    display:none;
+    position:fixed;
+    top:70px;right:60px;
+    width:270px;
+    background:var(--bar);
+    border:2px solid #00eaff;
+    border-radius:14px;
+    padding:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,.6);
+}
+.profile-menu.show{display:block}
+.profile-menu div{
+    padding:10px;border-radius:8px;cursor:pointer
+}
+.profile-menu div:hover{
+    background:rgba(0,180,204,.3)
+}
+.profile-menu .email{
+    font-size:13px;opacity:.8;cursor:default
+}
+.profile-menu label{
+    font-size:12px;opacity:.8
+}
+.profile-menu select{
+    width:100%;
+    margin-top:5px;
+    padding:6px;
+    border-radius:8px;
+    border:1px solid #00eaff;
+    background:rgba(255,255,255,.1);
+    color:var(--text)
+}
+.profile-menu hr{
+    border:1px solid #00eaff;
+    opacity:.3;
+    margin:10px 0
+}
+
+/* ================= HERO ================= */
+.hero{
+    padding-top:200px;
+    text-align:center;
+    flex:1;
+}
+.hero h1{
+    font-size:52px;
+    color:#00eaff;
+    text-shadow:0 0 18px rgba(0,234,255,.6);
+}
+.hero p{
+    max-width:700px;
+    margin:25px auto;
+    font-size:18px;
+    line-height:1.6
+}
+.hero-btn{
+    padding:14px 38px;
+    background:#00b5cc;
+    color:#fff;
+    font-weight:bold;
+    border-radius:14px;
+    text-decoration:none
+}
+.hero-btn:hover{
+    background:#00eaff;
+    color:#00252b;
+    box-shadow:0 0 18px #00eaff
+}
+
+/* ================= FOOTER ================= */
+footer{
+    background:var(--bar);
+    text-align:center;
+    padding:12px;
+    font-size:14px;
+    backdrop-filter:blur(6px);
+}
+</style>
+</head>
+
+<body>
+
+<!-- VIDEO BACKGROUND -->
+<div class="video-bg">
+    <video autoplay muted loop playsinline preload="metadata">
+        <source src="gym.mp4" type="video/mp4">
+    </video>
+</div>
+<div class="video-overlay"></div>
+
+<header class="topbar">
+    <a href="index.html"><img src="scorpion.png" class="logo"></a>
+
+    <div class="nav-center">
+        <a data-t="info" href="info.html">Info Progetto</a>
+    </div>
+
+    <div class="nav-right">
+        <img id="avatar" class="avatar" src="avatar-default.png">
+        <div id="profileMenu" class="profile-menu"></div>
+    </div>
+</header>
+
+<section class="hero">
+    <h1 data-t="titolo">Rispetto del Corpo</h1>
+    <p data-t="descrizione">
+        Questo sito promuove il rispetto del proprio corpo,
+        il benessere fisico ed emotivo e la consapevolezza personale.
+    </p>
+    <a href="sondaggio.html" class="hero-btn" data-t="partecipa">Partecipa</a>
+</section>
+
+<footer>© 2025/2026 Damiano,Gabriele e Antonio </footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey:"AIzaSyDyhMkXCr8AEEGggeakUET6xlW9JG92hDQ",
+ authDomain:"fisica-rispetto-del-corpo.firebaseapp.com",
+ projectId:"fisica-rispetto-del-corpo",
+ storageBucket:"fisica-rispetto-del-corpo.firebasestorage.app",
+ messagingSenderId:"1018600887176",
+ appId:"1:1018600887176:web:6712b714cb7ec9ca8b203d"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* ================= TRADUZIONI ================= */
+const tr={
+ it:{supporto:"Supporto",info:"Info Progetto",diritti:"Diritti",titolo:"Rispetto del Corpo",descrizione:"Questo sito promuove il rispetto del proprio corpo, il benessere fisico ed emotivo e la consapevolezza personale.",partecipa:"Partecipa",login:"Login",dashboard:"Dashboard",logout:"Logout",lingua:"Lingua",tema:"Tema",chiaro:"Chiaro",scuro:"Scuro"},
+ en:{supporto:"Support",info:"Company Info",diritti:"Rights",titolo:"Body Respect",descrizione:"This website promotes respect for your body, physical and emotional well-being, and personal awareness.",partecipa:"Join",login:"Login",dashboard:"Dashboard",logout:"Logout",lingua:"Language",tema:"Theme",chiaro:"Light",scuro:"Dark"}
+};
+
+let lang=localStorage.getItem("lang")||"it";
+let theme=localStorage.getItem("theme")||"dark";
+applyLang();
+document.body.classList.toggle("light",theme==="light");
+
+const avatar=document.getElementById("avatar");
+const menu=document.getElementById("profileMenu");
+avatar.onerror=()=>avatar.src="avatar-default.png";
+
+avatar.onclick=e=>{e.stopPropagation();menu.classList.toggle("show")}
+document.onclick=()=>menu.classList.remove("show");
+menu.onclick=e=>e.stopPropagation();
+
+/* ================= AUTH + AVATAR FIRESTORE ================= */
+onAuthStateChanged(auth,async user=>{
+ if(!user){
+  avatar.src="avatar-default.png";
+  menu.innerHTML=menuHTML("",false);
+  initControls();
+  return;
+ }
+
+ try{
+  const snap=await getDoc(doc(db,"utenti",user.uid));
+  if(snap.exists() && snap.data().avatar){
+    avatar.src=snap.data().avatar;
+  }else if(user.photoURL){
+    avatar.src=user.photoURL;
+  }
+ }catch{
+  avatar.src="avatar-default.png";
+ }
+
+ menu.innerHTML=menuHTML(user.email,true);
+ initControls();
+});
+
+/* ================= MENU ================= */
+function menuHTML(email,logged){
+ return `
+ ${logged?`
+  <div class="email">${email}</div>
+  <div onclick="goDashboard()">${tr[lang].dashboard}</div>
+  <div onclick="logout()">${tr[lang].logout}</div>
+ `:`<div onclick="goLogin()">${tr[lang].login}</div>`}
+ <hr>
+ <label>${tr[lang].lingua}</label>
+ <select id="langSel"><option value="it">IT</option><option value="en">EN</option></select>
+ <label>${tr[lang].tema}</label>
+ <select id="themeSel"><option value="dark">${tr[lang].scuro}</option><option value="light">${tr[lang].chiaro}</option></select>
+ `;
+}
+
+function initControls(){
+ document.getElementById("langSel").value=lang;
+ document.getElementById("themeSel").value=theme;
+
+ document.getElementById("langSel").onchange=e=>{
+  lang=e.target.value;
+  localStorage.setItem("lang",lang);
+  applyLang();
+  menu.innerHTML=menuHTML(auth.currentUser?.email||"",!!auth.currentUser);
+  initControls();
+ };
+
+ document.getElementById("themeSel").onchange=e=>{
+  theme=e.target.value;
+  localStorage.setItem("theme",theme);
+  document.body.classList.toggle("light",theme==="light");
+ };
+}
+
+function applyLang(){
+ document.querySelectorAll("[data-t]").forEach(el=>{
+  el.innerText=tr[lang][el.dataset.t];
+ });
+}
+
+window.goLogin=()=>location.href="login-staff.html";
+window.goDashboard=()=>location.href="dashboard.html";
+window.logout=()=>signOut(auth).then(()=>location.reload());
+</script>
+
+</body>
+</html>

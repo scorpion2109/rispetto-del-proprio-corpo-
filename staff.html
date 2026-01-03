@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Staff - Rispetto del Corpo</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* RESET E FONT */
+*{margin:0; padding:0; box-sizing:border-box;}
+body, html{height:100%; font-family:'Oswald',sans-serif; overflow-x:hidden; transition: background 0.5s, color 0.5s; color:white;}
+
+/* SFONDO ANIMATO SPORTIVO */
+body{
+  background: linear-gradient(270deg, #0f2027, #203a43, #2c5364);
+  background-size: 600% 600%;
+  animation: GradientBG 20s ease infinite;
+}
+@keyframes GradientBG{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+/* HEADER */
+header{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 30px;
+  background:rgba(0,0,0,0.65);
+  backdrop-filter: blur(8px);
+  position:fixed;
+  top:0;
+  z-index:100;
+  box-shadow:0 4px 10px rgba(0,0,0,0.3);
+  border-bottom:3px solid #FFD700;
+}
+.logo{
+  width:60px;
+  height:60px;
+  background:url('logo.png') center/contain no-repeat;
+}
+.title-menu{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+h1{
+  font-size:2.5rem;
+  color:#FFD700;
+  text-shadow:2px 2px 6px rgba(0,0,0,0.7);
+}
+.dropdown{position:relative; display:inline-block; cursor:pointer;}
+.dropdown-content{
+  display:none;
+  position:absolute;
+  background-color:rgba(0,0,0,0.85);
+  min-width:150px;
+  border-radius:5px;
+  padding:5px 0;
+  top:35px;
+  left:0;
+  box-shadow:0 4px 15px rgba(0,0,0,0.4);
+}
+.dropdown-content a{
+  color:white;
+  padding:10px 15px;
+  text-decoration:none;
+  display:block;
+  transition: background 0.3s, transform 0.2s;
+}
+.dropdown-content a:hover{
+  background:#FF6F61;
+  transform: translateX(5px);
+}
+.dropdown:hover .dropdown-content{display:block;}
+#settingsIcon{
+  font-size:2rem;
+  cursor:pointer;
+  transition: transform 0.3s;
+}
+#settingsIcon:hover{transform:rotate(20deg);}
+#settingsPanel{
+  display:none;
+  position:absolute;
+  top:70px;
+  right:30px;
+  background:rgba(0,0,0,0.85);
+  padding:15px;
+  border-radius:10px;
+  color:white;
+  z-index:101;
+  box-shadow:0 4px 15px rgba(0,0,0,0.3);
+}
+#settingsPanel label{display:block; margin:10px 0; cursor:pointer; font-size:1rem;}
+#settingsPanel input{margin-right:8px;}
+
+/* MAIN LOGIN FORM */
+main{
+  padding-top:150px;
+  text-align:center;
+  animation: fadeIn 1s ease;
+}
+@keyframes fadeIn{
+  0%{opacity:0; transform: translateY(10px);}
+  100%{opacity:1; transform: translateY(0);}
+}
+form{
+  background:rgba(0,0,0,0.6);
+  display:inline-block;
+  padding:25px 40px;
+  border-radius:15px;
+  box-shadow:0 0 25px rgba(0,0,0,0.5);
+  margin-top:30px;
+}
+form label{
+  display:block;
+  margin:15px 0 5px;
+  font-size:1.1rem;
+}
+form input, form select{
+  padding:10px 15px;
+  font-size:1rem;
+  border-radius:8px;
+  border:none;
+  width:100%;
+  margin-bottom:10px;
+}
+button.primary{
+  background:#FF6F61;
+  color:white;
+  border:none;
+  padding:12px 25px;
+  font-size:1.2rem;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.3s;
+  width:100%;
+}
+button.primary:hover{
+  transform:translateY(-3px);
+  box-shadow:0 0 35px rgba(255,111,97,1);
+}
+
+/* FOOTER */
+footer{
+  background:#FFD700;
+  color:#0f2027;
+  text-align:center;
+  padding:15px;
+  margin-top:50px;
+  font-size:1rem;
+  border-top:3px solid #0f2027;
+}
+
+/* TEMI */
+.light-mode{
+  background: linear-gradient(270deg, #dce1e6, #cfd6df, #bfc8d3);
+  color:#222;
+}
+.colorblind-mode{
+  filter: grayscale(100%);
+}
+
+/* TRATTINO SCRITTURA FUORI INPUT */
+body, div, span, h1, p, header, main, footer, button, a{
+  user-select:none;
+  cursor:default;
+}
+input, select, textarea{user-select:text; cursor:text;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"></div>
+  <div class="title-menu">
+    <h1>Staff Login</h1>
+    <div class="dropdown">
+      <span style="font-size:1.5rem; cursor:pointer;">☰</span>
+      <div class="dropdown-content">
+        <a href="index.html">Home</a>
+        <a href="mailto:assistenza@scorpion.studio.it">Assistenza</a>
+      </div>
+    </div>
+  </div>
+  <span id="settingsIcon">⚙️</span>
+</header>
+
+<div id="settingsPanel">
+  <label><input type="checkbox" id="toggleLight"> Modalità chiara</label>
+  <label><input type="checkbox" id="toggleColorblind"> Modalità daltonici</label>
+  <label><a href="index.html" style="color:white; text-decoration:none;">Torna Home</a></label>
+</div>
+
+<main>
+  <form id="staffLogin">
+    <label for="staffName">Seleziona il tuo nome</label>
+    <select id="staffName" required>
+      <option value="">-- Scegli il tuo nome --</option>
+      <option value="Damiano">Damiano</option>
+      <option value="Kevin">Kevin</option>
+      <option value="Gabriele">Gabriele</option>
+      <option value="Antonio">Antonio</option>
+    </select>
+
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="email@scorpion.studio.it" required>
+
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="Password" required>
+
+    <button type="submit" class="primary">Accedi</button>
+  </form>
+</main>
+
+<footer>
+  ® Scorpion & Studio's 2025/2026 (Fantasia, Scarola, Dandini, Tommasoni)
+</footer>
+
+<!-- FIRESTORE SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+// Config Firebase (CR Store)
+const firebaseConfig = {
+  apiKey: "AIzaSyDeib0frIIgd5WUVYpH05m4C5yqg7uKW3M",
+  authDomain: "rispetto-del-proprio-corpo.firebaseapp.com",
+  projectId: "rispetto-del-proprio-corpo",
+  storageBucket: "rispetto-del-proprio-corpo.firebasestorage.app",
+  messagingSenderId: "1025371275514",
+  appId: "1:1025371275514:web:9b4cb859687c49adaa8943",
+  measurementId: "G-ES2L52LK0X"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Login Staff
+const form = document.getElementById('staffLogin');
+form.addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const name = document.getElementById('staffName').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  db.collection('staff').doc(name).get().then(doc=>{
+    if(doc.exists && doc.data().email === email && doc.data().password === password){
+      alert("Accesso effettuato con successo!");
+      window.location.href = 'dashboard.html';
+    } else {
+      alert("Nome, email o password errati.");
+    }
+  });
+});
+
+// Impostazioni modalità
+const settingsIcon = document.getElementById('settingsIcon');
+const settingsPanel = document.getElementById('settingsPanel');
+settingsIcon.addEventListener('click', ()=>{
+  settingsPanel.style.display = (settingsPanel.style.display==='block')?'none':'block';
+});
+
+const toggleLight = document.getElementById('toggleLight');
+toggleLight.addEventListener('change', ()=>{
+  document.body.classList.toggle('light-mode', toggleLight.checked);
+});
+
+const toggleColorblind = document.getElementById('toggleColorblind');
+toggleColorblind.addEventListener('change', ()=>{
+  document.body.classList.toggle('colorblind-mode', toggleColorblind.checked);
+});
+</script>
+
+</body>
+</html>

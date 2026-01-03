@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sondaggio – Rispetto del Corpo</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+ --bg:#2b2b2b;
+ --text:#e6f7ff;
+ --bar:#3a3a3a;
+ --accent:#00eaff;
+}
+body{
+ margin:0;
+ font-family:Poppins,sans-serif;
+ background:var(--bg);
+ color:var(--text);
+}
+
+/* TOPBAR */
+.topbar{
+ position:fixed;
+ top:0; left:0;
+ width:100%;
+ height:70px;
+ background:var(--bar);
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 20px;
+ box-sizing:border-box;
+ z-index:1000;
+}
+.logo{height:40px}
+
+/* AVATAR */
+.avatar{
+ width:40px;
+ height:40px;
+ border-radius:50%;
+ border:2px solid var(--accent);
+ object-fit:cover;
+ cursor:pointer;
+}
+
+/* MENU */
+.profile-menu{
+ display:none;
+ position:fixed;
+ top:70px; right:20px;
+ width:260px;
+ background:var(--bar);
+ border:2px solid var(--accent);
+ border-radius:14px;
+ padding:12px;
+ box-shadow:0 8px 20px rgba(0,0,0,.6);
+ z-index:1000;
+}
+.profile-menu.show{display:block}
+.profile-menu div{
+ padding:10px;
+ border-radius:8px;
+ cursor:pointer;
+}
+.profile-menu div:hover{
+ background:rgba(0,180,204,.3)
+}
+.profile-menu .email{
+ font-size:13px;
+ opacity:.8;
+ cursor:default
+}
+.profile-menu label{
+ font-size:12px;
+ opacity:.8
+}
+.profile-menu select{
+ width:100%;
+ margin-top:5px;
+ padding:6px;
+ border-radius:8px;
+ border:1px solid var(--accent);
+ background:rgba(255,255,255,.1);
+ color:var(--text)
+}
+.profile-menu hr{
+ border:1px solid var(--accent);
+ opacity:.3;
+ margin:10px 0
+}
+
+/* CONTENUTO */
+.container{
+ max-width:800px;
+ margin:120px auto 40px;
+ padding:30px;
+ background:rgba(255,255,255,.05);
+ border-radius:20px;
+}
+h1{text-align:center}
+
+/* FORM */
+input[type=text]{
+ width:100%;
+ padding:12px;
+ border-radius:10px;
+ border:none;
+ margin:15px 0;
+ font-size:16px;
+}
+label{display:block;margin:6px 0}
+button{
+ margin-top:25px;
+ padding:14px;
+ width:100%;
+ font-size:18px;
+ border:none;
+ border-radius:14px;
+ background:var(--accent);
+ font-weight:bold;
+ cursor:pointer;
+}
+button:hover{background:#00b5cc}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+ <a href="index.html">
+  <img src="scorpion.png" class="logo">
+ </a>
+
+ <img id="avatar" class="avatar" src="https://via.placeholder.com/40">
+ <div id="menu" class="profile-menu"></div>
+</header>
+
+<div class="container">
+ <h1>Sondaggio sul Rispetto del Corpo</h1>
+
+ <form id="survey">
+  <label><strong>Nome</strong></label>
+  <input type="text" id="name" required>
+
+  <div id="questions"></div>
+
+  <button type="submit">Invia</button>
+ </form>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getFirestore, addDoc, collection, serverTimestamp }
+from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut }
+from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+/* FIREBASE */
+const firebaseConfig={
+ apiKey:"AIzaSyDyhMkXCr8AEEGggeakUET6xlW9JG92hDQ",
+ authDomain:"fisica-rispetto-del-corpo.firebaseapp.com",
+ projectId:"fisica-rispetto-del-corpo",
+ appId:"1:1018600887176:web:6712b714cb7ec9ca8b203d"
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const auth=getAuth(app);
+
+/* AVATAR + MENU */
+const avatar=document.getElementById("avatar");
+const menu=document.getElementById("menu");
+let email=null;
+
+function menuHTML(){
+ return email ? `
+  <div class="email">${email}</div>
+  <div onclick="goDashboard()">Dashboard</div>
+  <div onclick="logout()">Logout</div>
+  <hr>
+  ${settings()}
+ ` : `
+  <div onclick="goLogin()">Login</div>
+  <hr>
+  ${settings()}
+ `;
+}
+
+function settings(){
+ return `
+  <label>Lingua</label>
+  <select><option>IT</option><option>EN</option></select>
+  <label>Tema</label>
+  <select><option>Scuro</option><option>Chiaro</option></select>
+ `;
+}
+
+onAuthStateChanged(auth,u=>{
+ email = u ? u.email : null;
+ menu.innerHTML = menuHTML();
+});
+
+avatar.onclick = e=>{
+ e.stopPropagation();
+ menu.innerHTML = menuHTML();
+ menu.classList.toggle("show");
+};
+
+document.addEventListener("click",()=>menu.classList.remove("show"));
+
+window.goLogin = ()=>location.href="login-staff.html";
+window.goDashboard = ()=>location.href="dashboard.html";
+window.logout = ()=>signOut(auth);
+
+/* DOMANDE */
+let questions=[
+ {q:"Quante volte fai attività fisica a settimana?",a:["Mai","1-2 volte","3-4 volte","Quasi ogni giorno"]},
+ {q:"Preferisci muoverti o stare seduto nel tempo libero?",a:["Seduto","Dipende","Muovermi"]},
+ {q:"Come ti senti dopo aver fatto sport?",a:["Stanco","Normale","Energico","Felice"]},
+ {q:"Usi lo sport per scaricare lo stress?",a:["Mai","A volte","Spesso"]},
+ {q:"Pensi che il movimento faccia bene alla mente?",a:["No","Un po'","Sì"]},
+ {q:"Ti piace fare sport?",a:["No","A volte","Sì"]},
+ {q:"Quanto è importante rispettare il proprio corpo?",a:["Poco","Abbastanza","Molto"]}
+];
+
+questions = questions.sort(()=>Math.random()-0.5);
+
+const qDiv=document.getElementById("questions");
+questions.forEach((obj,i)=>{
+ qDiv.innerHTML+=`
+ <div style="margin:25px 0">
+  <p><strong>${i+1}. ${obj.q}</strong></p>
+  ${obj.a.map(a=>`
+   <label><input type="radio" name="q${i}" value="${a}"> ${a}</label>
+  `).join("")}
+ </div>`;
+});
+
+/* INVIO */
+document.getElementById("survey").addEventListener("submit",async e=>{
+ e.preventDefault();
+
+ const name=document.getElementById("name").value.trim();
+ if(!name) return alert("Inserisci il nome");
+
+ let answers={};
+ for(let i=0;i<questions.length;i++){
+  const c=document.querySelector(`input[name="q${i}"]:checked`);
+  if(!c) return alert("Rispondi a tutte le domande");
+  answers[questions[i].q]=c.value;
+ }
+
+ await addDoc(collection(db,"sondaggi"),{
+  nome: name,
+  email: email || null,
+  risposte: answers,
+  stato: "pending",
+  data: serverTimestamp()
+ });
+
+ alert("Sondaggio inviato correttamente");
+ location.href="index.html";
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Info – Rispetto del Corpo</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{user-select:none;cursor:default}
+
+:root{
+ --bg:black;
+ --text:white;
+ --bar:#1f1f1f;
+ --accent:#00eaff;
+}
+body.light{
+ --bg:#f2f2f2;
+ --text:#00252b;
+ --bar:#ffffff;
+}
+
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font-family:Poppins,sans-serif;
+ overflow:hidden;
+}
+
+/* TOPBAR */
+.topbar{
+ position:fixed;
+ top:0;
+ width:100%;
+ height:70px;
+ background:var(--bar);
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 25px;
+ z-index:1000;
+ box-shadow:0 4px 15px rgba(0,0,0,.5);
+}
+.logo{height:40px}
+
+/* AVATAR */
+.avatar{
+ width:40px;
+ height:40px;
+ border-radius:50%;
+ border:2px solid var(--accent);
+ object-fit:cover;
+ margin-right:20px;
+ cursor:pointer;
+}
+
+/* MENU */
+.profile-menu{
+ display:none;
+ position:fixed;
+ top:70px;
+ right:60px;
+ width:260px;
+ background:var(--bar);
+ border:2px solid var(--accent);
+ border-radius:14px;
+ padding:12px;
+ z-index:2000;
+ box-shadow:0 8px 20px rgba(0,0,0,.6);
+}
+.profile-menu.show{display:block}
+.profile-menu div{
+ padding:10px;
+ border-radius:8px;
+ cursor:pointer;
+}
+.profile-menu div:hover{background:rgba(0,180,204,.3)}
+.profile-menu .email{font-size:13px;opacity:.8}
+.profile-menu label{font-size:12px;opacity:.8}
+.profile-menu select{
+ width:100%;
+ margin-top:5px;
+ padding:6px;
+ border-radius:8px;
+ border:1px solid var(--accent);
+ background:rgba(255,255,255,.1);
+ color:var(--text);
+}
+.profile-menu hr{border:1px solid var(--accent);opacity:.3;margin:10px 0}
+
+/* CREDITI */
+.credits{
+ position:fixed;
+ top:100%;
+ width:100%;
+ text-align:center;
+ animation:scroll 50s linear infinite;
+}
+@keyframes scroll{
+ from{transform:translateY(0)}
+ to{transform:translateY(-240%)}
+}
+.credits h1{
+ color:var(--accent);
+ margin:50px 0 10px;
+}
+.credits p{
+ margin:6px 0;
+ font-size:18px;
+}
+
+/* MUSICA */
+.music-btn{
+ position:fixed;
+ bottom:20px;
+ right:20px;
+ background:#00b5cc;
+ color:#00252b;
+ padding:12px 22px;
+ border-radius:25px;
+ font-weight:600;
+ cursor:pointer;
+ z-index:1500;
+}
+.music-btn:hover{background:var(--accent)}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+ <a href="index.html">
+  <img src="scorpion.png" class="logo">
+ </a>
+ <img id="avatar" class="avatar" src="https://via.placeholder.com/40">
+ <div id="profileMenu" class="profile-menu"></div>
+</header>
+
+<div class="credits" id="credits"></div>
+
+<div class="music-btn" id="musicBtn">▶️ Avvia musica</div>
+<audio id="bgMusic">
+ <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+</audio>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth,onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+/* FIREBASE */
+const app=initializeApp({
+ apiKey:"AIzaSyDyhMkXCr8AEEGggeakUET6xlW9JG92hDQ",
+ authDomain:"fisica-rispetto-del-corpo.firebaseapp.com",
+ projectId:"fisica-rispetto-del-corpo",
+ appId:"1:1018600887176:web:6712b714cb7ec9ca8b203d"
+});
+const auth=getAuth(app);
+
+/* STATO */
+let lang=localStorage.getItem("lang")||"it";
+let theme=localStorage.getItem("theme")||"dark";
+document.body.classList.toggle("light",theme==="light");
+
+/* ELEMENTI */
+const avatar=document.getElementById("avatar");
+const menu=document.getElementById("profileMenu");
+const credits=document.getElementById("credits");
+const music=document.getElementById("bgMusic");
+const btn=document.getElementById("musicBtn");
+
+/* CONTENUTI FORMALI */
+const content={
+ it:`
+  <h1>Rispetto del Corpo</h1>
+  <p>Progetto di Educazione Civica</p>
+
+  <h1>Ideazione del Progetto</h1>
+  <p>Damiano Fantasia</p>
+  <p>Antonio Saccinto</p>
+  <p>Gabriele Tomassoni</p>
+
+  <h1>Progettazione dei Contenuti</h1>
+  <p>Damiano Fantasia</p>
+  <p>Antonio Saccinto</p>
+  <p>Gabriele Tomassoni</p>
+
+  <h1>Sviluppo Tecnico e Realizzazione del Sito Web</h1>
+  <p><strong>Damiano Fantasia</strong></p>
+
+  <h1>Contesto Didattico</h1>
+  <p>Progetto realizzato nell’ambito dell’insegnamento di Educazione Civica</p>
+
+  <p style="margin-top:80px">
+   © 2025 – Progetto scolastico<br>
+   Tutti i diritti riservati
+  </p>
+ `,
+ en:`
+  <h1>Body Respect</h1>
+  <p>Civic Education Project</p>
+
+  <h1>Project Concept and Content Design</h1>
+  <p>Damiano Fantasia</p>
+  <p>Antonio Saccinto</p>
+  <p>Gabriele Tomassoni</p>
+
+  <h1>Technical Development and Website Implementation</h1>
+  <p><strong>Damiano Fantasia</strong></p>
+
+  <h1>Educational Context</h1>
+  <p>Project developed within the Civic Education curriculum</p>
+
+  <p style="margin-top:80px">
+   © 2025 – Educational Project<br>
+   All rights reserved
+  </p>
+ `
+};
+credits.innerHTML=content[lang];
+
+/* MENU AVATAR */
+avatar.onclick=e=>{
+ e.stopPropagation();
+ menu.classList.toggle("show");
+};
+document.onclick=()=>menu.classList.remove("show");
+menu.onclick=e=>e.stopPropagation();
+
+/* AUTH */
+onAuthStateChanged(auth,user=>{
+ if(user){
+  if(user.photoURL) avatar.src=user.photoURL;
+  menu.innerHTML=menuHTML(user.email,true);
+ }else{
+  avatar.src="https://via.placeholder.com/40";
+  menu.innerHTML=menuHTML("",false);
+ }
+ initControls();
+});
+
+/* MENU HTML */
+function menuHTML(email,logged){
+ return`
+ ${logged?`
+  <div class="email">${email}</div>
+  <div onclick="goDashboard()">Dashboard</div>
+  <div onclick="logout()">Logout</div>
+ `:`<div onclick="goLogin()">Login</div>`}
+ <hr>
+ <label>Lingua</label>
+ <select id="langSel">
+  <option value="it">Italiano</option>
+  <option value="en">English</option>
+ </select>
+ <label>Tema</label>
+ <select id="themeSel">
+  <option value="dark">Scuro</option>
+  <option value="light">Chiaro</option>
+ </select>
+ `;
+}
+
+function initControls(){
+ langSel.value=lang;
+ themeSel.value=theme;
+
+ langSel.onchange=e=>{
+  lang=e.target.value;
+  localStorage.setItem("lang",lang);
+  credits.innerHTML=content[lang];
+ };
+ themeSel.onchange=e=>{
+  theme=e.target.value;
+  localStorage.setItem("theme",theme);
+  document.body.classList.toggle("light",theme==="light");
+ };
+}
+
+/* NAV */
+window.goLogin=()=>location.href="login-staff.html";
+window.goDashboard=()=>location.href="dashboard.html";
+window.logout=()=>signOut(auth).then(()=>location.reload());
+
+/* AUDIO */
+let playing=false;
+btn.onclick=async()=>{
+ if(!playing){
+  await music.play();
+  btn.textContent="⏸️ Ferma musica";
+ }else{
+  music.pause();
+  btn.textContent="▶️ Avvia musica";
+ }
+ playing=!playing;
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Staff Ultimate</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0; padding:0; box-sizing:border-box;}
+body, html{
+  height:100%;
+  font-family:'Oswald',sans-serif;
+  background: linear-gradient(270deg,#0f2027,#203a43,#2c5364);
+  background-size:600% 600%;
+  animation: GradientBG 20s ease infinite;
+  color:white;
+  transition:0.5s;
+}
+@keyframes GradientBG{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+
+header{
+  text-align:center;
+  font-size:2.5rem;
+  padding:40px 20px;
+  color:#FFD700;
+  text-shadow:2px 2px 10px rgba(0,0,0,0.7);
+}
+
+main{
+  max-width:950px;
+  margin:20px auto 50px auto;
+  padding:20px;
+  background:rgba(0,0,0,0.5);
+  border-radius:20px;
+  box-shadow:0 0 30px rgba(0,0,0,0.6);
+  display:flex; flex-direction:column; gap:20px;
+}
+
+.response{
+  display:flex; flex-direction:column;
+  gap:10px;
+  padding:20px;
+  background:rgba(255,255,255,0.05);
+  border-radius:15px;
+  transition:0.5s, transform 0.5s, box-shadow 0.5s;
+  box-shadow:0 0 15px rgba(0,0,0,0.3);
+  opacity:0; transform:scale(0.9);
+}
+.response.show{opacity:1; transform:scale(1);}
+.response.accepted{box-shadow:0 0 25px #28a745; animation: glow 2s infinite alternate;}
+.response.rejected{box-shadow:0 0 25px #dc3545; animation: glow 2s infinite alternate;}
+
+@keyframes glow{
+  0%{box-shadow:0 0 15px currentColor;}
+  100%{box-shadow:0 0 35px currentColor;}
+}
+
+.response-header{
+  display:flex; align-items:center; gap:15px;
+}
+
+.avatar{
+  width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid #FFD700;
+}
+
+label{font-weight:bold; margin-top:5px;}
+
+button{padding:10px 20px; border:none; border-radius:10px; cursor:pointer; transition:0.3s; font-size:1rem;}
+button:hover{transform:translateY(-2px);}
+#prev, #next{background:#FF6F61; color:white;}
+#accept{background:#28a745; color:white;}
+#reject{background:#dc3545; color:white;}
+#filterButtons{display:flex; gap:15px; flex-wrap:wrap;}
+
+#notification{
+  position:fixed; top:20px; right:20px; background:#FFD700; color:#0f2027; padding:15px 25px; border-radius:12px;
+  font-weight:bold; box-shadow:0 0 15px rgba(0,0,0,0.5); opacity:0; transform:translateY(-20px); transition:0.5s;
+  z-index:999;
+}
+
+footer{text-align:center; background:#FFD700; color:#0f2027; padding:15px; font-size:1rem; border-top:3px solid #0f2027; margin-top:40px;}
+</style>
+</head>
+<body>
+
+<header>Dashboard Staff Ultimate</header>
+
+<div id="notification">Nuova risposta in arrivo!</div>
+
+<main>
+<div id="filterButtons">
+  <button id="showAll">Tutti</button>
+  <button id="showAccepted">Accettati</button>
+  <button id="showRejected">Rifiutati</button>
+</div>
+
+<div class="response" id="responseContainer">
+  <div id="responseContent">Caricamento...</div>
+</div>
+
+<div style="display:flex; justify-content:center; gap:15px; margin-top:10px;">
+  <button id="prev">⬅️</button>
+  <button id="next">➡️</button>
+</div>
+
+<div style="display:flex; justify-content:center; gap:15px; margin-top:10px;">
+  <button id="accept">Accetta ✅</button>
+  <button id="reject">Rifiuta ❌</button>
+</div>
+</main>
+
+<footer>® Scorpion & Studio's 2025/2026 (Fantasia, Scarola, Dandini, Tommasoni)</footer>
+
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+// CONFIG FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyDeib0frIIgd5WUVYpH05m4C5yqg7uKW3M",
+  authDomain: "rispetto-del-proprio-corpo.firebaseapp.com",
+  projectId: "rispetto-del-proprio-corpo",
+  storageBucket: "rispetto-del-proprio-corpo.firebasestorage.app",
+  messagingSenderId: "1025371275514",
+  appId: "1:1025371275514:web:9b4cb859687c49adaa8943",
+  measurementId: "G-ES2L52LK0X"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// STAFF AVATAR E COLORI
+const staffInfo = {
+  "Damiano": {avatar:"https://i.pravatar.cc/50?img=1", color:"#FF6F61"},
+  "Kevin": {avatar:"https://i.pravatar.cc/50?img=2", color:"#28a745"},
+  "Gabriele": {avatar:"https://i.pravatar.cc/50?img=3", color:"#FFB600"},
+  "Antonio": {avatar:"https://i.pravatar.cc/50?img=4", color:"#6f42c1"}
+};
+
+let responses = [];
+let index = 0;
+let currentFilter = 'all';
+
+const responseContainer = document.getElementById('responseContainer');
+const responseContent = document.getElementById('responseContent');
+const notification = document.getElementById('notification');
+
+function showResponse(r){
+  if(!r){
+    responseContent.innerHTML = "Nessuna risposta disponibile.";
+    responseContainer.className = "response";
+    return;
+  }
+  let staff = staffInfo[r.name] || {avatar:"https://i.pravatar.cc/50?img=5", color:"#FFD700"};
+  responseContent.innerHTML = `
+    <div class="response-header">
+      <img src="${staff.avatar}" class="avatar">
+      <strong style="color:${staff.color}">${r.name}</strong>
+    </div>
+    <label>1:</label> ${r.question1}<br>
+    <label>2:</label> ${r.question2}<br>
+    <label>3:</label> ${r.question3}<br>
+    <label>4:</label> ${r.question4}<br>
+    <label>5:</label> ${r.question5}<br>
+    <label>6:</label> ${r.question6}<br>
+    <label>Status:</label> ${r.status}
+  `;
+  responseContainer.className = "response show";
+  if(r.status==='accepted') responseContainer.classList.add('accepted');
+  if(r.status==='rejected') responseContainer.classList.add('rejected');
+}
+
+function getFiltered(){
+  return responses.filter(r=>{
+    if(currentFilter==='accepted') return r.status==='accepted';
+    if(currentFilter==='rejected') return r.status==='rejected';
+    return true;
+  });
+}
+
+// NAVIGAZIONE
+document.getElementById('prev').addEventListener('click', ()=>{
+  index--;
+  const filtered = getFiltered();
+  if(index<0) index=0;
+  showResponse(filtered[index]);
+});
+document.getElementById('next').addEventListener('click', ()=>{
+  index++;
+  const filtered = getFiltered();
+  if(index>=filtered.length) index=filtered.length-1;
+  showResponse(filtered[index]);
+});
+
+// FILTRI
+document.getElementById('showAll').addEventListener('click', ()=>{currentFilter='all'; index=0; showResponse(getFiltered()[index]);});
+document.getElementById('showAccepted').addEventListener('click', ()=>{currentFilter='accepted'; index=0; showResponse(getFiltered()[index]);});
+document.getElementById('showRejected').addEventListener('click', ()=>{currentFilter='rejected'; index=0; showResponse(getFiltered()[index]);});
+
+// ACCETTA / RIFIUTA
+document.getElementById('accept').addEventListener('click', ()=>{
+  const filtered = getFiltered();
+  if(filtered.length===0) return;
+  const r = filtered[index];
+  db.collection('survey').doc(r.id).update({status:'accepted'});
+  responses = responses.map(res=>res.id===r.id ? {...res,status:'accepted'}:res);
+  showResponse(filtered[index]);
+});
+
+document.getElementById('reject').addEventListener('click', ()=>{
+  const filtered = getFiltered();
+  if(filtered.length===0) return;
+  const r = filtered[index];
+  db.collection('survey').doc(r.id).update({status:'rejected'});
+  responses = responses.map(res=>res.id===r.id ? {...res,status:'rejected'}:res);
+  showResponse(filtered[index]);
+});
+
+// NOTIFICHE IN TEMPO REALE
+db.collection('survey').orderBy('timestamp','desc').onSnapshot(snapshot=>{
+  snapshot.docChanges().forEach(change=>{
+    if(change.type==='added'){
+      const newData = {id:change.doc.id, ...change.doc.data()};
+      responses.unshift(newData);
+      index=0;
+      showResponse(responses[0]);
+      // Animazione notifica
+      notification.innerText = `Nuova risposta da ${newData.name}!`;
+      notification.style.opacity='1';
+      notification.style.transform='translateY(0)';
+      setTimeout(()=>{
+        notification.style.opacity='0';
+        notification.style.transform='translateY(-20px)';
+      },4000);
+    }
+  });
+});
+</script>
+
+</body>
+</html>

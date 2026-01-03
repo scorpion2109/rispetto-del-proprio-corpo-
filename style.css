@@ -1,0 +1,203 @@
+/* RESET BASE */
+*{margin:0; padding:0; box-sizing:border-box;}
+body, html{height:100%; font-family:'Oswald', sans-serif; overflow-x:hidden; transition: background 0.5s, color 0.5s;}
+
+/* SFONDO ANIMATO SPORTIVO */
+body{
+  background: linear-gradient(270deg, #0f2027, #203a43, #2c5364);
+  background-size: 600% 600%;
+  animation: GradientBG 20s ease infinite;
+  color:white;
+}
+@keyframes GradientBG{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+/* HEADER STRISCIA FISSA */
+header{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 30px;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  position:fixed;
+  top:0;
+  z-index:100;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* LOGO */
+.logo{
+  width:50px;
+  height:50px;
+  background:url('logo.png') center/contain no-repeat;
+}
+
+/* TITOLO + MENÙ */
+.title-menu{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+h1{
+  font-size:2.5rem;
+  color:#FFD700;
+  text-shadow:2px 2px 5px rgba(0,0,0,0.7);
+}
+.dropdown{
+  position:relative;
+  display:inline-block;
+  cursor:pointer;
+}
+.dropdown-content{
+  display:none;
+  position:absolute;
+  background-color:rgba(0,0,0,0.85);
+  min-width:150px;
+  border-radius:5px;
+  padding:5px 0;
+  top:30px;
+  left:0;
+  box-shadow:0 4px 15px rgba(0,0,0,0.4);
+}
+.dropdown-content a{
+  color:white;
+  padding:10px 15px;
+  text-decoration:none;
+  display:block;
+  transition: background 0.3s, transform 0.2s;
+}
+.dropdown-content a:hover{
+  background:#FF6F61;
+  transform: translateX(5px);
+}
+.dropdown:hover .dropdown-content{display:block;}
+
+/* SETTINGS ICON */
+#settingsIcon{
+  font-size:2rem;
+  cursor:pointer;
+  transition: transform 0.3s;
+}
+#settingsIcon:hover{transform:rotate(20deg);}
+
+/* PANNELLO IMPOSTAZIONI */
+#settingsPanel{
+  display:none;
+  position:absolute;
+  top:65px;
+  right:30px;
+  background:rgba(0,0,0,0.85);
+  padding:15px;
+  border-radius:10px;
+  color:white;
+  z-index:101;
+  box-shadow:0 4px 15px rgba(0,0,0,0.3);
+  animation: slideIn 0.3s ease forwards;
+}
+@keyframes slideIn{
+  0%{opacity:0; transform:translateY(-10px);}
+  100%{opacity:1; transform:translateY(0);}
+}
+#settingsPanel label{display:block; margin:10px 0; cursor:pointer; font-size:1rem;}
+#settingsPanel input{margin-right:8px;}
+
+/* MAIN CONTENT */
+main{
+  padding-top:130px;
+  text-align:center;
+  animation: fadeIn 1s ease;
+}
+@keyframes fadeIn{
+  0%{opacity:0; transform: translateY(10px);}
+  100%{opacity:1; transform: translateY(0);}
+}
+p.description{
+  max-width:700px;
+  margin:20px auto;
+  font-size:1.3rem;
+  text-shadow:1px 1px 3px rgba(0,0,0,0.6);
+}
+
+/* BOTTONI INTERATTIVI */
+button{
+  padding:12px 25px;
+  font-size:1.2rem;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  transition:0.3s;
+}
+button.primary{
+  background:#FF6F61;
+  color:white;
+  box-shadow:0 0 15px rgba(255,111,97,0.6);
+}
+button.primary:hover{
+  transform:translateY(-3px);
+  box-shadow:0 0 35px rgba(255,111,97,1);
+}
+button.secondary{
+  background:#2196f3;
+  color:white;
+  box-shadow:0 0 15px rgba(33,150,243,0.6);
+}
+button.secondary:hover{
+  transform:translateY(-3px);
+  box-shadow:0 0 35px rgba(33,150,243,1);
+}
+
+/* FOOTER */
+footer{
+  background:#FF6F61;
+  color:white;
+  text-align:center;
+  padding:15px;
+  margin-top:50px;
+  font-size:1rem;
+}
+
+/* TEMI */
+.light-mode{
+  background: linear-gradient(270deg, #dce1e6, #cfd6df, #bfc8d3);
+  color:#222;
+}
+.colorblind-mode{
+  filter: grayscale(100%);
+}
+
+/* DISABILITA TRATTINO DI SCRITTURA OVUNQUE FUORI INPUT */
+body, div, span, h1, p, header, main, footer, button, a{
+  user-select:none;
+  cursor:default;
+}
+input, select, textarea{user-select:text; cursor:text;}
+
+/* STRISCE COLORATE PER HEADER E FOOTER */
+header{
+  border-bottom:3px solid #FFD700;
+}
+footer{
+  border-top:3px solid #FFD700;
+}
+
+/* EFFETTO SFOGLIAMENTO BOTTONI */
+button.primary, button.secondary{
+  position:relative;
+  overflow:hidden;
+}
+button.primary::after, button.secondary::after{
+  content:'';
+  position:absolute;
+  top:0; left:-100%;
+  width:100%; height:100%;
+  background:rgba(255,255,255,0.2);
+  transition:0.5s;
+}
+button.primary:hover::after, button.secondary:hover::after{
+  left:0;
+}
